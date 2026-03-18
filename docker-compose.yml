@@ -15,8 +15,9 @@ services:
     # ── All keys set here — no .env file needed ──────────────────────────────
     environment:
       # ── Anthropic / Claude ─────────────────────────────────────────────────
-      ANTHROPIC_API_KEY: "sk-ant-REPLACE_ME"          # ← paste your key here
+      #ANTHROPIC_API_KEY: "sk-ant-REPLACE_ME"          # ← paste your key here
       VOYAGE_API_KEY: "sk-ant-REPLACE_ME"              # same as ANTHROPIC_API_KEY
+      ANTHROPIC_API_KEY: "sk-ant-REPLACE_ME"
 
       # ── MongoDB Atlas ──────────────────────────────────────────────────────
       MONGODB_URI: "mongodb+srv://USER:PASS@cluster.mongodb.net/"   # ← replace
