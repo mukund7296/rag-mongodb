@@ -1,0 +1,63 @@
+version: "3.9"
+
+services:
+
+  # ── RAG API ──────────────────────────────────────────────────────────────────
+  rag-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: final
+    container_name: rag_api
+    ports:
+      - "5000:5000"
+
+    # ── All keys set here — no .env file needed ──────────────────────────────
+    environment:
+      # ── Anthropic / Claude ─────────────────────────────────────────────────
+      ANTHROPIC_API_KEY: "sk-ant-REPLACE_ME"          # ← paste your key here
+      VOYAGE_API_KEY: "sk-ant-REPLACE_ME"              # same as ANTHROPIC_API_KEY
+
+      # ── MongoDB Atlas ──────────────────────────────────────────────────────
+      MONGODB_URI: "mongodb+srv://USER:PASS@cluster.mongodb.net/"   # ← replace
+      MONGODB_DB: "rag_db"
+      MONGODB_COLLECTION: "documents"
+      VECTOR_INDEX_NAME: "vector_index"
+
+      # ── Model ──────────────────────────────────────────────────────────────
+      GENERATION_MODEL: "claude-sonnet-4-20250514"
+
+      # ── Embedding ──────────────────────────────────────────────────────────
+      EMBEDDING_PROVIDER: "anthropic"
+      EMBEDDING_MODEL: "voyage-3"
+      EMBEDDING_DIM: "1024"
+
+      # ── Retrieval ──────────────────────────────────────────────────────────
+      RETRIEVAL_METHOD: "hybrid"       # vector | text | hybrid
+      TOP_K: "6"
+      RERANK_TOP_K: "3"
+      MIN_SCORE: "0.5"
+
+      # ── Chunking ───────────────────────────────────────────────────────────
+      CHUNK_SIZE: "512"
+      CHUNK_OVERLAP: "64"
+
+      # ── Server ─────────────────────────────────────────────────────────────
+      PORT: "5000"
+      FLASK_DEBUG: "false"
+
+    restart: unless-stopped
+    networks:
+      - rag_net
+
+    # Waits for the health-check to pass before marking the container healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+
+networks:
+  rag_net:
+    driver: bridge
